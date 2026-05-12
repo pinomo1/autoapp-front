@@ -1,0 +1,319 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --sea-ink: #0f1720;
+  --sea-ink-soft: #4c5b68;
+  --lagoon: #1f7bd7;
+  --lagoon-deep: #155fd1;
+  --palm: #0f8c6d;
+  --sand: #eef2f6;
+  --foam: #f7f9fb;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.94);
+  --line: rgba(15, 23, 32, 0.12);
+  --inset-glint: rgba(255, 255, 255, 0.9);
+  --kicker: rgba(15, 140, 109, 0.92);
+  --bg-base: #e8edf2;
+  --header-bg: rgba(252, 253, 255, 0.88);
+  --chip-bg: rgba(255, 255, 255, 0.86);
+  --chip-line: rgba(21, 95, 209, 0.14);
+  --link-bg-hover: rgba(255, 255, 255, 0.94);
+  --hero-a: rgba(31, 123, 215, 0.18);
+  --hero-b: rgba(15, 140, 109, 0.12);
+}
+
+:root[data-theme="dark"] {
+  --sea-ink: #eef4fa;
+  --sea-ink-soft: #b4c2cf;
+  --lagoon: #57a7ff;
+  --lagoon-deep: #84c2ff;
+  --palm: #49d2ae;
+  --sand: #0e141b;
+  --foam: #101923;
+  --surface: rgba(17, 24, 34, 0.82);
+  --surface-strong: rgba(12, 18, 26, 0.94);
+  --line: rgba(132, 194, 255, 0.18);
+  --inset-glint: rgba(255, 255, 255, 0.08);
+  --kicker: #78e3c1;
+  --bg-base: #070c12;
+  --header-bg: rgba(9, 13, 20, 0.82);
+  --chip-bg: rgba(14, 20, 29, 0.9);
+  --chip-line: rgba(132, 194, 255, 0.22);
+  --link-bg-hover: rgba(19, 27, 39, 0.85);
+  --hero-a: rgba(87, 167, 255, 0.16);
+  --hero-b: rgba(73, 210, 174, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sea-ink: #eef4fa;
+    --sea-ink-soft: #b4c2cf;
+    --lagoon: #57a7ff;
+    --lagoon-deep: #84c2ff;
+    --palm: #49d2ae;
+    --sand: #0e141b;
+    --foam: #101923;
+    --surface: rgba(17, 24, 34, 0.82);
+    --surface-strong: rgba(12, 18, 26, 0.94);
+    --line: rgba(132, 194, 255, 0.18);
+    --inset-glint: rgba(255, 255, 255, 0.08);
+    --kicker: #78e3c1;
+    --bg-base: #070c12;
+    --header-bg: rgba(9, 13, 20, 0.82);
+    --chip-bg: rgba(14, 20, 29, 0.9);
+    --chip-line: rgba(132, 194, 255, 0.22);
+    --link-bg-hover: rgba(19, 27, 39, 0.85);
+    --hero-a: rgba(87, 167, 255, 0.16);
+    --hero-b: rgba(73, 210, 174, 0.12);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--sea-ink);
+  font-family: var(--font-sans);
+  background-color: var(--bg-base);
+  background:
+    radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
+    radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
+    radial-gradient(720px 380px at 50% 115%, rgba(31, 123, 215, 0.08), transparent 68%),
+    linear-gradient(180deg, color-mix(in oklab, var(--sand) 72%, white) 0%, var(--foam) 42%, var(--bg-base) 100%);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.24;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
+    radial-gradient(circle at 78% 26%, rgba(31, 123, 215, 0.16), transparent 42%),
+    radial-gradient(circle at 42% 82%, rgba(15, 140, 109, 0.12), transparent 36%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+}
+
+a {
+  color: var(--lagoon-deep);
+  text-decoration-color: color-mix(in oklab, var(--lagoon-deep) 45%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: color-mix(in oklab, var(--lagoon-deep) 82%, white 18%);
+}
+
+code {
+  font-size: 0.9em;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--surface-strong) 84%, white 16%);
+  border-radius: 7px;
+  padding: 2px 7px;
+}
+
+pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.page-wrap {
+  width: min(1080px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.display-title {
+  font-family: "Space Grotesk", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.island-shell {
+  border: 1px solid color-mix(in oklab, var(--line) 85%, white 15%);
+  background:
+    linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 98%, white 2%), var(--surface));
+  box-shadow:
+    0 1px 0 var(--inset-glint) inset,
+    0 20px 42px rgba(10, 16, 24, 0.08),
+    0 8px 24px rgba(10, 16, 24, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.feature-card {
+  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 96%, white 4%), var(--surface));
+  box-shadow:
+    0 1px 0 var(--inset-glint) inset,
+    0 16px 28px rgba(10, 16, 24, 0.08),
+    0 4px 12px rgba(10, 16, 24, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--lagoon-deep) 35%, var(--line));
+}
+
+button,
+.island-shell,
+a {
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.island-kicker {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.69rem;
+  color: var(--kicker);
+}
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--sea-ink-soft);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--lagoon), var(--palm));
+  transition: transform 170ms ease;
+}
+
+.nav-link:hover,
+.nav-link.is-active {
+  color: var(--sea-ink);
+}
+
+.nav-link:hover::after,
+.nav-link.is-active::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 640px) {
+  .nav-link::after {
+    bottom: -4px;
+  }
+
+  .page-wrap {
+    width: min(1080px, calc(100% - 1.25rem));
+  }
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: color-mix(in oklab, var(--header-bg) 86%, transparent 14%);
+}
+
+.rise-in {
+  animation: rise-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.inventory-chip,
+.status-chip,
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--chip-line);
+  background: var(--chip-bg);
+  color: var(--sea-ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+}
+
+.inventory-panel,
+.metrics-panel,
+.hero-panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+  box-shadow:
+    0 1px 0 var(--inset-glint) inset,
+    0 18px 32px rgba(10, 16, 24, 0.08);
+}
+
+.soft-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+
+.glass-field,
+.glass-input,
+.glass-select,
+.glass-textarea {
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--surface-strong) 88%, white 12%);
+  color: var(--sea-ink);
+  box-shadow: 0 1px 0 var(--inset-glint) inset;
+}
+
+.glass-field:focus,
+.glass-input:focus,
+.glass-select:focus,
+.glass-textarea:focus {
+  outline: 2px solid color-mix(in oklab, var(--lagoon) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.dealer-grid {
+  background-image:
+    linear-gradient(rgba(15, 23, 32, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 32, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
