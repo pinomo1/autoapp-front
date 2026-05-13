@@ -35,7 +35,8 @@ function CarsListPage() {
           </div>
           <Link
             to="/cars/create"
-            className="rounded-full bg-[var(--sea-ink)] px-4 py-2 font-semibold text-white no-underline shadow-[0_10px_24px_rgba(10,16,24,0.28)]"
+            className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
+            px-4 py-2 font-semibold no-underline text-center"
           >
             Add Car
           </Link>
@@ -53,7 +54,7 @@ function CarsListPage() {
                 className="inventory-panel rounded-2xl p-4"
               >
                 {car.mainPhotoUrl ? (
-                  <div className="mb-3 h-32 overflow-hidden rounded-xl bg-[var(--line)]">
+                  <div className="mb-3 flex h-40 overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface)]">
                     <img
                       src={car.mainPhotoUrl}
                       alt="Car"
@@ -61,8 +62,8 @@ function CarsListPage() {
                     />
                   </div>
                 ) : (
-                  <div className="mb-3 flex h-32 items-center justify-center overflow-hidden rounded-xl bg-[var(--line)] px-4 text-center text-sm text-[var(--sea-ink-soft)]">
-                    No photo uploaded yet.
+                  <div className="mb-3 flex h-40 items-center rounded-xl justify-center px-4 text-center text-sm text-[var(--sea-ink-soft)] border border-[var(--line)] bg-[var(--surface)]">
+                      No photo uploaded yet.
                   </div>
                 )}
                 <p className="island-kicker mb-2">Vehicle</p>

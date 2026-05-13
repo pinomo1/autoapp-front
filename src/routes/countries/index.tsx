@@ -21,7 +21,8 @@ function CountriesListPage() {
           </div>
           <Link
             to="/countries/create"
-            className="rounded-full bg-[var(--sea-ink)] px-4 py-2 font-semibold text-white no-underline shadow-[0_10px_24px_rgba(10,16,24,0.28)]"
+            className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
+            px-4 py-2 font-semibold no-underline text-center"
           >
             Add Country
           </Link>

@@ -98,7 +98,7 @@ function CarCreatePage() {
   };
 
   return (
-    <div className="page-wrap py-10">
+    <div className="page-wrap px-4 py-10">
       <div className="hero-panel rounded-2xl p-6 md:p-8">
         <p className="island-kicker">Cars</p>
         <h1 className="display-title mt-2 text-3xl font-bold">Create Car</h1>

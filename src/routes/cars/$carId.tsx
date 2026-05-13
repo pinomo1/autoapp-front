@@ -94,7 +94,7 @@ function CarDetailPage() {
   const car = carQuery.data;
 
   return (
-    <div className="page-wrap px-4 py-10">
+    <div className="page-wrap py-10 overflow-x-hidden">
       <Link
         to="/cars"
         className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-[var(--sea-ink)] no-underline hover:underline"
@@ -104,21 +104,21 @@ function CarDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Info */}
-        <section className="lg:col-span-2">
-          <div className="hero-panel rounded-[2rem] p-6 md:p-8">
+        <section className="min-w-0 lg:col-span-2">
+          <div className="hero-panel rounded-[2rem] p-4 sm:p-6 md:p-8">
             <div className="mb-6">
               {photosQuery.isLoading ? (
-                <div className="h-64 rounded-xl bg-[var(--line)]" />
+                <div className="h-96 rounded-xl bg-[var(--line)]" />
               ) : photosQuery.isError ? (
                 car.mainPhotoUrl ? (
-                  <div className="h-64 overflow-hidden rounded-xl bg-[var(--line)]">
+                  <div className="h-96 overflow-hidden rounded-xl bg-[var(--line)]">
                     <img src={car.mainPhotoUrl} alt="Car" className="h-full w-full object-cover" />
                   </div>
                 ) : null
               ) : hasPhotos && activePhoto ? (
                 <>
                   <div
-                    className="relative h-64 overflow-hidden rounded-xl bg-[var(--line)]"
+                    className="relative h-96 overflow-hidden rounded-xl bg-[var(--line)]"
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
                   >
@@ -172,11 +172,11 @@ function CarDetailPage() {
                   ) : null}
                 </>
               ) : car.mainPhotoUrl ? (
-                <div className="h-64 overflow-hidden rounded-lg bg-[var(--line)]">
+                <div className="h-96 overflow-hidden rounded-lg bg-[var(--line)]">
                   <img src={car.mainPhotoUrl} alt="Car" className="h-full w-full object-cover" />
                 </div>
               ) : (
-                <div className="flex h-64 items-center justify-center rounded-lg bg-[var(--line)] px-4 text-center text-sm text-[var(--sea-ink-soft)]">
+                <div className="flex h-96 items-center justify-center rounded-lg bg-[var(--line)] px-4 text-center text-sm text-[var(--sea-ink-soft)]">
                   No photos uploaded yet.
                 </div>
               )}
@@ -249,7 +249,7 @@ function CarDetailPage() {
               <Link
                 to="/cars/$carId/photos"
                 params={{ carId }}
-                className="rounded-full bg-[var(--sea-ink)] px-4 py-2 font-semibold text-white no-underline shadow-[0_10px_24px_rgba(10,16,24,0.28)]"
+                className="inline-flex w-full items-center justify-center rounded-full border border-[var(--line)] px-4 py-2 text-center font-semibold text-[var(--sea-ink)] no-underline sm:w-auto"
               >
                 Manage Photos
               </Link>
@@ -258,9 +258,9 @@ function CarDetailPage() {
         </section>
 
         {/* Sidebar */}
-        <aside className="metrics-panel h-fit rounded-[2rem] p-6">
+        <aside className="metrics-panel min-w-0 h-fit rounded-[2rem] p-6">
           <h2 className="text-lg font-semibold text-[var(--sea-ink)]">Actions</h2>
-          <p className="mt-2 text-sm text-[var(--sea-ink-soft)]">
+          <p className="mt-2 break-words text-sm text-[var(--sea-ink-soft)]">
             Car ID: {car.id}
           </p>
           <div className="mt-4 space-y-3 border-t border-[var(--line)] pt-4">
