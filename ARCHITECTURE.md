@@ -211,6 +211,12 @@ Set API base URL in `.env.local`:
 VITE_API_URL=http://localhost:5071/api
 ```
 
+Sentry is optional. If you want error reporting, set:
+
+```text
+VITE_SENTRY_DSN=your-sentry-dsn
+```
+
 ## Current Status
 
 - View, Repository, and Adapter layers are explicitly implemented.
