@@ -25,6 +25,7 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/instrument.server.mjs ./instrument.server.mjs
+COPY --from=build /app/server.node.mjs ./server.node.mjs
 
 EXPOSE 3000
 CMD ["npm", "start"]

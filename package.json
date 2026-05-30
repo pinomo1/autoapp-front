@@ -10,7 +10,7 @@
     "build": "vite build && node -e \"require('node:fs').copyFileSync('instrument.server.mjs', 'dist/server/instrument.server.mjs')\"",
     "preview": "vite preview",
     "test": "vitest run",
-    "start": "node --import ./dist/server/instrument.server.mjs dist/server/server.js",
+    "start": "node --import ./instrument.server.mjs ./server.node.mjs",
     "docs:api": "typedoc",
     "docs:api:json": "typedoc --json docs/api/typedoc.json"
   },
