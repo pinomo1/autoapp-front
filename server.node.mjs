@@ -1,5 +1,6 @@
 import http from 'node:http'
 import { fileURLToPath } from 'url'
+import path from 'node:path'
 import fs from 'fs'
 
 // Import the compiled server entry
@@ -19,6 +20,47 @@ if (!entry || typeof entry.fetch !== 'function') {
 async function handle(nodeReq, nodeRes) {
   try {
     const url = new URL(nodeReq.url || '/', `http://${nodeReq.headers.host || `${host}:${port}`}`)
+    const pathname = decodeURIComponent(url.pathname)
+
+    // Serve static client files (Vite build output) directly from dist/client for common asset paths
+    if (nodeReq.method === 'GET') {
+      // Restrict to known public paths
+      const publicPrefixes = ['/assets/', '/favicon.ico', '/logo192.png', '/logo512.png', '/manifest.json', '/robots.txt']
+      const shouldServe = publicPrefixes.some((p) => pathname === p || pathname.startsWith(p))
+      if (shouldServe) {
+        // Prevent path traversal
+        const clientRoot = path.resolve(process.cwd(), 'dist', 'client')
+        const fsPath = path.join(clientRoot, pathname)
+        if (fsPath.indexOf(clientRoot) === 0 && fs.existsSync(fsPath) && fs.statSync(fsPath).isFile()) {
+          const ext = path.extname(fsPath).slice(1).toLowerCase()
+          const contentType = (() => {
+            switch (ext) {
+              case 'css': return 'text/css; charset=utf-8'
+              case 'js': return 'application/javascript; charset=utf-8'
+              case 'json': return 'application/json; charset=utf-8'
+              case 'png': return 'image/png'
+              case 'jpg':
+              case 'jpeg': return 'image/jpeg'
+              case 'svg': return 'image/svg+xml'
+              case 'ico': return 'image/x-icon'
+              case 'woff2': return 'font/woff2'
+              case 'woff': return 'font/woff'
+              case 'map': return 'application/octet-stream'
+              default: return 'application/octet-stream'
+            }
+          })()
+          const stat = fs.statSync(fsPath)
+          nodeRes.writeHead(200, {
+            'Content-Type': contentType,
+            'Content-Length': String(stat.size),
+            'Cache-Control': ext === 'css' || ext === 'js' || pathname.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'public, max-age=3600'
+          })
+          const stream = fs.createReadStream(fsPath)
+          stream.pipe(nodeRes)
+          return
+        }
+      }
+    }
 
     // Build a Request from the Node incoming message
     const headers = new Headers()
