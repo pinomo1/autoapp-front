@@ -9,12 +9,15 @@ import {
   updateFeatureSchema,
   type UpdateFeatureFormValues,
 } from '#/features/features/feature.schemas';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/features/$featureId')({
   component: FeatureDetailPage,
 });
 
 function FeatureDetailPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const { featureId } = Route.useParams();
   const navigate = useNavigate();
   const featureQuery = useFeatureById(featureId);
@@ -114,13 +117,15 @@ function FeatureDetailPage() {
             {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
 
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <button
-                type="submit"
-                disabled={isSubmitting || updateFeatureMutation.isPending}
-                className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting || updateFeatureMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </button>
+              {canMutate ? (
+                <button
+                  type="submit"
+                  disabled={isSubmitting || updateFeatureMutation.isPending}
+                  className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmitting || updateFeatureMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </button>
+              ) : null}
               <Link
                 to="/features"
                 className="rounded-full border border-[var(--line)] px-4 py-2 font-semibold text-[var(--sea-ink)] no-underline"
@@ -136,14 +141,16 @@ function FeatureDetailPage() {
           <p className="mt-2 text-sm text-[var(--sea-ink-soft)]">
             Remove this feature if it is no longer used.
           </p>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleteFeatureMutation.isPending}
-            className="mt-4 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {deleteFeatureMutation.isPending ? 'Deleting...' : 'Delete Feature'}
-          </button>
+          {canMutate ? (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleteFeatureMutation.isPending}
+              className="mt-4 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {deleteFeatureMutation.isPending ? 'Deleting...' : 'Delete Feature'}
+            </button>
+          ) : null}
         </aside>
       </div>
     </div>

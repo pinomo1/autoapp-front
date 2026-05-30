@@ -16,6 +16,32 @@ export interface IdResponseDto {
   id: string;
 }
 
+// Auth Types
+export interface LoginRequestDto {
+  userNameOrEmail: string;
+  password: string;
+}
+
+export interface RefreshTokenRequestDto {
+  refreshToken: string;
+}
+
+export interface LoginResponseDto {
+  accessToken: string;
+  expiresAt: string;
+  refreshToken: string;
+  refreshTokenExpiresAt: string;
+  userName: string;
+  roles: string[];
+}
+
+export interface MeResponseDto {
+  id: string;
+  userName: string;
+  email?: string | null;
+  roles: string[];
+}
+
 // Brand Types
 export interface BrandResponseDto {
   id: string;

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { mapToFormErrors } from '#/application/form-error-mapper';
 import { useCreateFeature } from '#/hooks';
+import { useAuth } from '#/features/auth';
 import {
   createFeatureSchema,
   type CreateFeatureFormValues,
@@ -14,6 +15,8 @@ export const Route = createFileRoute('/features/create')({
 });
 
 function FeatureCreatePage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const navigate = useNavigate();
   const createFeatureMutation = useCreateFeature();
   const [formError, setFormError] = useState<string | null>(null);
@@ -78,13 +81,15 @@ function FeatureCreatePage() {
           {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
 
           <div className="mt-2 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={isSubmitting || createFeatureMutation.isPending}
-              className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting || createFeatureMutation.isPending ? 'Creating...' : 'Create'}
-            </button>
+            {canMutate ? (
+              <button
+                type="submit"
+                disabled={isSubmitting || createFeatureMutation.isPending}
+                className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmitting || createFeatureMutation.isPending ? 'Creating...' : 'Create'}
+              </button>
+            ) : null}
             <Link
               to="/features"
               className="rounded-full border border-[var(--line)] px-4 py-2 font-semibold text-[var(--sea-ink)] no-underline"

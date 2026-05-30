@@ -1,11 +1,14 @@
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { useCountrySearch } from '#/hooks';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/countries/')({
   component: CountriesListPage,
 });
 
 function CountriesListPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const countriesQuery = useCountrySearch({});
 
   return (
@@ -19,13 +22,15 @@ function CountriesListPage() {
               Manage the countries available to brands.
             </p>
           </div>
-          <Link
-            to="/countries/create"
-            className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
-            px-4 py-2 font-semibold no-underline text-center"
-          >
-            Add Country
-          </Link>
+          {canMutate ? (
+            <Link
+              to="/countries/create"
+              className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
+              px-4 py-2 font-semibold no-underline text-center"
+            >
+              Add Country
+            </Link>
+          ) : null}
         </div>
 
         {countriesQuery.isLoading ? (

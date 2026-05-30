@@ -1,11 +1,14 @@
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { useBrandSearch } from '#/hooks';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/brands/')({
   component: BrandsListPage,
 });
 
 function BrandsListPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const brandsQuery = useBrandSearch({});
 
   return (
@@ -19,13 +22,15 @@ function BrandsListPage() {
               Manage automotive brands in the catalog.
             </p>
           </div>
-          <Link
-            to="/brands/create"
-            className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
-            px-4 py-2 font-semibold no-underline text-center"
-          >
-            Add Brand
-          </Link>
+          {canMutate ? (
+            <Link
+              to="/brands/create"
+              className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
+              px-4 py-2 font-semibold no-underline text-center"
+            >
+              Add Brand
+            </Link>
+          ) : null}
         </div>
 
         {brandsQuery.isLoading ? (

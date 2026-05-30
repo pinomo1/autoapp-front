@@ -1,0 +1,9 @@
+.git
+.github
+dist
+node_modules
+logs
+README.md
+docs
+.tanstack
+.vscode

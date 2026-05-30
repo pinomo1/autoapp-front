@@ -1,7 +1,11 @@
 import { Link } from '@tanstack/react-router'
+import { useAuth } from '#/features/auth'
 import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
+  const auth = useAuth()
+  const isSignedIn = auth.phase === 'ready' && auth.isAuthenticated
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)]/95 px-4 backdrop-blur-xl">
       <nav className="page-wrap flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-4">
@@ -59,6 +63,35 @@ export default function Header() {
           <div className="hidden sm:flex sm:items-center sm:ml-2">
             <ThemeToggle />
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="rounded-full border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-2 text-sm text-[var(--sea-ink-soft)]">
+            {isSignedIn ? (
+              <>
+                <span className="font-semibold text-[var(--sea-ink)]">{auth.userName}</span>
+                {auth.roles.length > 0 ? <span className="ml-2">{auth.roles.join(', ')}</span> : null}
+              </>
+            ) : (
+              <span className="font-semibold text-[var(--sea-ink)]">Guest browsing</span>
+            )}
+          </div>
+          {isSignedIn ? (
+            <button
+              type="button"
+              onClick={() => auth.logout()}
+              className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] transition hover:-translate-y-0.5"
+            >
+              Sign out
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline transition hover:-translate-y-0.5"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       </nav>
     </header>

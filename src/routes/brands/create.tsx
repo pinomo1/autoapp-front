@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCountryOptions, useCreateBrand } from '#/hooks';
 import { mapToFormErrors } from '#/application/form-error-mapper';
+import { useAuth } from '#/features/auth';
 import {
   createBrandSchema,
   type CreateBrandFormValues,
@@ -14,6 +15,8 @@ export const Route = createFileRoute('/brands/create')({
 });
 
 function BrandCreatePage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const navigate = useNavigate();
   const createBrandMutation = useCreateBrand();
   const countriesQuery = useCountryOptions();
@@ -105,15 +108,17 @@ function BrandCreatePage() {
             <p className="text-sm text-red-600">{formError}</p>
           ) : null}
 
-          <div className="mt-2 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={isSubmitting || createBrandMutation.isPending}
-              className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting || createBrandMutation.isPending ? 'Creating...' : 'Create'}
-            </button>
-          </div>
+          {canMutate ? (
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={isSubmitting || createBrandMutation.isPending}
+                className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmitting || createBrandMutation.isPending ? 'Creating...' : 'Create'}
+              </button>
+            </div>
+          ) : null}
         </form>
       </div>
     </div>

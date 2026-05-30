@@ -1,5 +1,5 @@
-// API client utility - handles base configuration for all API calls
-const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:5071/api';
+import { API_BASE_URL } from './api-base'
+import { getAuthSession, refreshStoredSession } from '#/features/auth'
 
 // Note: transport errors are thrown as plain objects with a stable shape
 // (duck-typed `ApiClientError`) so higher layers can map them without
@@ -10,94 +10,93 @@ export const apiClient = {
    * Sends a JSON GET request and parses the response.
    */
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    });
-    return handleResponse<T>(response);
+    return request<T>(endpoint, { ...options, method: 'GET' })
   },
 
   /**
    * Sends a JSON POST request and parses the response.
    */
   async post<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    return request<T>(endpoint, {
       ...options,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
       body: data ? JSON.stringify(data) : undefined,
-    });
-    return handleResponse<T>(response);
+    })
   },
 
   /**
    * Sends a JSON PUT request and parses the response.
    */
   async put<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    return request<T>(endpoint, {
       ...options,
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
       body: data ? JSON.stringify(data) : undefined,
-    });
-    return handleResponse<T>(response);
+    })
   },
 
   /**
    * Sends a DELETE request and parses the response.
    */
   async delete<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    });
-    return handleResponse<T>(response);
+    return request<T>(endpoint, { ...options, method: 'DELETE' })
   },
 
   /**
    * Sends a multipart/form-data POST request.
    */
   async postFormData<T>(endpoint: string, formData: FormData, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    return request<T>(endpoint, {
       ...options,
       method: 'POST',
-      headers: {
-        ...options?.headers,
-      },
       body: formData,
-    });
-    return handleResponse<T>(response);
+      omitJsonContentType: true,
+    })
   },
 
   /**
    * Sends a multipart/form-data PUT request.
    */
   async putFormData<T>(endpoint: string, formData: FormData, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    return request<T>(endpoint, {
       ...options,
       method: 'PUT',
-      headers: {
-        ...options?.headers,
-      },
       body: formData,
-    });
-    return handleResponse<T>(response);
+      omitJsonContentType: true,
+    })
   },
-};
+}
+
+interface RequestOptions extends RequestInit {
+  omitJsonContentType?: boolean
+}
+
+async function request<T>(endpoint: string, options: RequestOptions = {}, retryCount = 0): Promise<T> {
+  const session = getAuthSession()
+  const headers = new Headers(options.headers)
+
+  if (!options.omitJsonContentType) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  if (session?.accessToken) {
+    headers.set('Authorization', `Bearer ${session.accessToken}`)
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  })
+
+  if (response.status === 401 && retryCount === 0 && !endpoint.startsWith('/auth/')) {
+    const refreshedSession = await refreshStoredSession()
+    if (refreshedSession) {
+      return request<T>(endpoint, options, 1)
+    }
+  }
+
+  return handleResponse<T>(response)
+}
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {

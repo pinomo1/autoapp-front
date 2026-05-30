@@ -15,12 +15,15 @@ import {
   updateBrandSchema,
   type UpdateBrandFormValues,
 } from '#/features/brands/brand.schemas';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/brands/$brandId')({
   component: BrandDetailPage,
 });
 
 function BrandDetailPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const { brandId } = Route.useParams();
   const navigate = useNavigate();
   const brandQuery = useBrandById(brandId);
@@ -170,13 +173,15 @@ function BrandDetailPage() {
             {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
 
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <button
-                type="submit"
-                disabled={isSubmitting || updateBrandMutation.isPending}
-                className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting || updateBrandMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </button>
+              {canMutate ? (
+                <button
+                  type="submit"
+                  disabled={isSubmitting || updateBrandMutation.isPending}
+                  className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmitting || updateBrandMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </button>
+              ) : null}
               <Link
                 to="/brands"
                 className="rounded-full border border-[var(--line)] px-4 py-2 font-semibold text-[var(--sea-ink)] no-underline"
@@ -220,22 +225,26 @@ function BrandDetailPage() {
               <p className="text-xs text-[var(--sea-ink-soft)]">Selected: {logoFile.name}</p>
             ) : null}
             {logoError ? <p className="text-sm text-red-600">{logoError}</p> : null}
-            <button
-              type="button"
-              onClick={handleLogoUpload}
-              disabled={uploadBrandLogoMutation.isPending}
-              className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {uploadBrandLogoMutation.isPending ? 'Uploading...' : 'Upload Logo'}
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleteBrandMutation.isPending}
-              className="rounded-full border border-red-200 bg-red-50 px-4 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {deleteBrandMutation.isPending ? 'Deleting...' : 'Delete Brand'}
-            </button>
+            {canMutate ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleLogoUpload}
+                  disabled={uploadBrandLogoMutation.isPending}
+                  className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {uploadBrandLogoMutation.isPending ? 'Uploading...' : 'Upload Logo'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={deleteBrandMutation.isPending}
+                  className="rounded-full border border-red-200 bg-red-50 px-4 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {deleteBrandMutation.isPending ? 'Deleting...' : 'Delete Brand'}
+                </button>
+              </>
+            ) : null}
           </div>
         </aside>
       </div>

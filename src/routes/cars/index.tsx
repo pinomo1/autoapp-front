@@ -1,5 +1,6 @@
 import { Link, createFileRoute, useSearch } from '@tanstack/react-router';
 import { useCarSearch } from '#/hooks';
+import { useAuth } from '#/features/auth';
 
 interface CarsSearchParams {
   page?: number;
@@ -13,6 +14,8 @@ export const Route = createFileRoute('/cars/')({
 });
 
 function CarsListPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const { page = 1 } = useSearch({ from: Route.id });
   const pageSize = 10;
 
@@ -33,13 +36,15 @@ function CarsListPage() {
               Browse and manage all vehicles in the catalog.
             </p>
           </div>
-          <Link
-            to="/cars/create"
-            className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
-            px-4 py-2 font-semibold no-underline text-center"
-          >
-            Add Car
-          </Link>
+          {canMutate ? (
+            <Link
+              to="/cars/create"
+              className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
+              px-4 py-2 font-semibold no-underline text-center"
+            >
+              Add Car
+            </Link>
+          ) : null}
         </div>
 
         {carsQuery.isLoading ? (

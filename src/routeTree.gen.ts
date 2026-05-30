@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FeaturesIndexRouteImport } from './routes/features/index'
 import { Route as CountriesIndexRouteImport } from './routes/countries/index'
@@ -24,6 +25,11 @@ import { Route as BrandsCreateRouteImport } from './routes/brands/create'
 import { Route as BrandsBrandIdRouteImport } from './routes/brands/$brandId'
 import { Route as CarsCarIdPhotosRouteImport } from './routes/cars/$carId_.photos'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -97,6 +103,7 @@ const CarsCarIdPhotosRoute = CarsCarIdPhotosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/brands/$brandId': typeof BrandsBrandIdRoute
   '/brands/create': typeof BrandsCreateRoute
   '/cars/$carId': typeof CarsCarIdRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/brands/$brandId': typeof BrandsBrandIdRoute
   '/brands/create': typeof BrandsCreateRoute
   '/cars/$carId': typeof CarsCarIdRoute
@@ -130,6 +138,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/brands/$brandId': typeof BrandsBrandIdRoute
   '/brands/create': typeof BrandsCreateRoute
   '/cars/$carId': typeof CarsCarIdRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/brands/$brandId'
     | '/brands/create'
     | '/cars/$carId'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/login'
     | '/brands/$brandId'
     | '/brands/create'
     | '/cars/$carId'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/login'
     | '/brands/$brandId'
     | '/brands/create'
     | '/cars/$carId'
@@ -197,6 +209,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
   BrandsBrandIdRoute: typeof BrandsBrandIdRoute
   BrandsCreateRoute: typeof BrandsCreateRoute
   CarsCarIdRoute: typeof CarsCarIdRoute
@@ -214,6 +227,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -317,6 +337,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
   BrandsBrandIdRoute: BrandsBrandIdRoute,
   BrandsCreateRoute: BrandsCreateRoute,
   CarsCarIdRoute: CarsCarIdRoute,

@@ -2,6 +2,7 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 import { useMemo, useState, useEffect } from 'react';
 import type { ComponentProps } from 'react';
 import { mapToFormErrors } from '#/application/form-error-mapper';
+import { useAuth } from '#/features/auth';
 import {
   useCarPhotosByCarId,
   useCreateCarPhoto,
@@ -15,6 +16,8 @@ export const Route = createFileRoute('/cars/$carId_/photos')({
 type FormSubmitHandler = NonNullable<ComponentProps<'form'>['onSubmit']>;
 
 function CarPhotosPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const { carId } = Route.useParams();
   const photosQuery = useCarPhotosByCarId(carId);
   const createPhotoMutation = useCreateCarPhoto();
@@ -96,7 +99,8 @@ function CarPhotosPage() {
           <p className="island-kicker">Photos</p>
           <h1 className="display-title mt-2 text-3xl font-bold">Add Car Photo</h1>
 
-          <form className="mt-6 grid gap-4" onSubmit={handleCreate}>
+          {canMutate ? (
+            <form className="mt-6 grid gap-4" onSubmit={handleCreate}>
             <label className="grid gap-2">
               <span className="text-sm font-semibold">Photo File</span>
               <input
@@ -164,14 +168,19 @@ function CarPhotosPage() {
 
             {createError ? <p className="text-sm text-red-600">{createError}</p> : null}
 
-            <button
-              type="submit"
-              disabled={createPhotoMutation.isPending}
-              className="rounded-lg bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {createPhotoMutation.isPending ? 'Adding...' : 'Add Photo'}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={createPhotoMutation.isPending}
+                className="rounded-lg bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {createPhotoMutation.isPending ? 'Adding...' : 'Add Photo'}
+              </button>
+            </form>
+          ) : (
+            <div className="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--surface-strong)] p-4 text-sm text-[var(--sea-ink-soft)]">
+              Sign in to add or remove car photos.
+            </div>
+          )}
         </section>
 
         <section className="island-shell rounded-[2rem] p-6">
@@ -211,16 +220,18 @@ function CarPhotosPage() {
                         ) : null}
                       </div>
 
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          disabled={isBusy}
-                          onClick={() => handleDelete(photo.id)}
-                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          Delete
-                        </button>
-                      </div>
+                      {canMutate ? (
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() => handleDelete(photo.id)}
+                            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
                   </article>
                 );

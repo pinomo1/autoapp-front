@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { mapToFormErrors } from '#/application/form-error-mapper';
 import { useBrandOptions, useCarEnums, useCreateCar } from '#/hooks';
+import { useAuth } from '#/features/auth';
 import {
   createCarSchema,
   type CreateCarFormValues,
@@ -14,6 +15,8 @@ export const Route = createFileRoute('/cars/create')({
 });
 
 function CarCreatePage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const navigate = useNavigate();
   const brandsQuery = useBrandOptions();
   const carEnumsQuery = useCarEnums();
@@ -303,13 +306,15 @@ function CarCreatePage() {
           {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
 
           <div className="mt-2 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={createCarMutation.isPending}
-              className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)]"
-            >
-              {createCarMutation.isPending ? 'Creating...' : 'Create Car'}
-            </button>
+            {canMutate ? (
+              <button
+                type="submit"
+                disabled={createCarMutation.isPending}
+                className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)]"
+              >
+                {createCarMutation.isPending ? 'Creating...' : 'Create Car'}
+              </button>
+            ) : null}
             <Link
               to="/cars"
               className="rounded-full border border-[var(--line)] px-4 py-2 font-semibold text-[var(--sea-ink)] no-underline"

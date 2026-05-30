@@ -1,0 +1,43 @@
+name: Deploy AutoApp Frontend to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: azure_vm_deploy
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Sync files to Azure VM
+        uses: burnett01/rsync-deployments@v8
+        with:
+          switches: -avzr --delete --exclude='.git' --exclude='.github' --exclude='**/node_modules' --exclude='dist' --exclude='logs'
+          path: ./
+          remote_path: ${{ secrets.AZURE_VM_APP_DIR }}
+          remote_host: ${{ secrets.AZURE_VM_HOST }}
+          remote_user: ${{ secrets.AZURE_VM_USER }}
+          remote_key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          remote_port: ${{ secrets.AZURE_VM_SSH_PORT || 22 }}
+
+      - name: Build and restart containers on the VM
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          port: ${{ secrets.AZURE_VM_SSH_PORT || 22 }}
+          script: |
+            set -e
+            cd "${{ secrets.AZURE_VM_APP_DIR }}"
+
+            cat > .env <<'EOF'
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            EOF
+
+            docker compose up -d --build --remove-orphans

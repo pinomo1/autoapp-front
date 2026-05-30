@@ -1,11 +1,14 @@
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { useFeatureSearch } from '#/hooks';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/features/')({
   component: FeaturesListPage,
 });
 
 function FeaturesListPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const featuresQuery = useFeatureSearch({});
 
   return (
@@ -19,13 +22,15 @@ function FeaturesListPage() {
               Manage the feature tags that can be attached to cars.
             </p>
           </div>
-          <Link
-            to="/features/create"
-            className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
-            px-4 py-2 font-semibold no-underline text-center"
-          >
-            Add Feature
-          </Link>
+          {canMutate ? (
+            <Link
+              to="/features/create"
+              className="block rounded-full text-[var(--sea-ink)] border border-[var(--line)] 
+              px-4 py-2 font-semibold no-underline text-center"
+            >
+              Add Feature
+            </Link>
+          ) : null}
         </div>
 
         {featuresQuery.isLoading ? (

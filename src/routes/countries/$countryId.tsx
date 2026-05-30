@@ -9,12 +9,15 @@ import {
   updateCountrySchema,
   type UpdateCountryFormValues,
 } from '#/features/countries/country.schemas';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/countries/$countryId')({
   component: CountryDetailPage,
 });
 
 function CountryDetailPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const { countryId } = Route.useParams();
   const navigate = useNavigate();
   const countryQuery = useCountryById(countryId);
@@ -131,13 +134,15 @@ function CountryDetailPage() {
             {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
 
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <button
-                type="submit"
-                disabled={isSubmitting || updateCountryMutation.isPending}
-                className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting || updateCountryMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </button>
+              {canMutate ? (
+                <button
+                  type="submit"
+                  disabled={isSubmitting || updateCountryMutation.isPending}
+                  className="rounded-full bg-[var(--lagoon-deep)] px-4 py-2 font-semibold text-white shadow-[0_10px_24px_rgba(21,95,209,0.24)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmitting || updateCountryMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </button>
+              ) : null}
               <Link
                 to="/countries"
                 className="rounded-full border border-[var(--line)] px-4 py-2 font-semibold text-[var(--sea-ink)] no-underline"
@@ -153,14 +158,16 @@ function CountryDetailPage() {
           <p className="mt-2 text-sm text-[var(--sea-ink-soft)]">
             Remove this country if it is no longer needed.
           </p>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleteCountryMutation.isPending}
-            className="mt-4 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {deleteCountryMutation.isPending ? 'Deleting...' : 'Delete Country'}
-          </button>
+          {canMutate ? (
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleteCountryMutation.isPending}
+              className="mt-4 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {deleteCountryMutation.isPending ? 'Deleting...' : 'Delete Country'}
+            </button>
+          ) : null}
         </aside>
       </div>
     </div>

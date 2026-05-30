@@ -1,12 +1,15 @@
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCarById, useCarPhotosByCarId, useDeleteCar } from '#/hooks';
+import { useAuth } from '#/features/auth';
 
 export const Route = createFileRoute('/cars/$carId')({
   component: CarDetailPage,
 });
 
 function CarDetailPage() {
+  const auth = useAuth();
+  const canMutate = auth.phase === 'ready' && auth.isAuthenticated;
   const { carId } = Route.useParams();
   const navigate = useNavigate();
   const carQuery = useCarById(carId);
@@ -245,15 +248,17 @@ function CarDetailPage() {
               </div>
             ) : null}
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                to="/cars/$carId/photos"
-                params={{ carId }}
-                className="inline-flex w-full items-center justify-center rounded-full border border-[var(--line)] px-4 py-2 text-center font-semibold text-[var(--sea-ink)] no-underline sm:w-auto"
-              >
-                Manage Photos
-              </Link>
-            </div>
+            {canMutate ? (
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  to="/cars/$carId/photos"
+                  params={{ carId }}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-[var(--line)] px-4 py-2 text-center font-semibold text-[var(--sea-ink)] no-underline sm:w-auto"
+                >
+                  Manage Photos
+                </Link>
+              </div>
+            ) : null}
           </div>
         </section>
 
@@ -270,14 +275,16 @@ function CarDetailPage() {
             >
               Back to List
             </Link>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleteCarMutation.isPending}
-              className="w-full rounded-full border border-red-200 bg-red-50 px-4 py-2 text-center font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {deleteCarMutation.isPending ? 'Deleting...' : 'Delete Car'}
-            </button>
+            {canMutate ? (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleteCarMutation.isPending}
+                className="w-full rounded-full border border-red-200 bg-red-50 px-4 py-2 text-center font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deleteCarMutation.isPending ? 'Deleting...' : 'Delete Car'}
+              </button>
+            ) : null}
           </div>
         </aside>
       </div>
